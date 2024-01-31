@@ -38,6 +38,30 @@ class Greetings(commands.Cog):
         embed.add_field(name = 'labooo',value='belowoooo',inline=True)
         embed.set_footer(text='WOWOWO')
         await ctx.send(embed = embed )
+    
+    #Reactions
+    @commands.Cog.listener()
+    async def on_reaction_add(self, reaction, user):
+        if user == self.client.user:
+            return 
+        channel = reaction.message.channel
+        await channel.send(user.name + ' added' + reaction.emoji)
+    
+    @commands.Cog.listener()
+    async def on_reaction_remove(self, reaction, user):
+        if user == self.client.user:
+            return 
+        channel = reaction.message.channel
+        await channel.send(user.name + ' removed' + reaction.emoji)
+    
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        
+        if message.author == self.client.user:
+            return 
+        if ('react') in message.content:
+            emoji = '🥸'
+            await message.add_reaction(emoji)
 
 async def setup(client):
     await client.add_cog(Greetings(client))
