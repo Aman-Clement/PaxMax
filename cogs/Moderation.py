@@ -7,9 +7,9 @@ class Moderation(commands.Cog):
     def __init__(self, client):
         self.client = client
     
-    @commands.command(pass_Context = True)
+    @commands.command()
     @has_permissions(manage_roles = True)
-    async def addroles(self, ctx, user : discord.Member , *, role : discord.Role):
+    async def addroles(self, ctx, user: discord.Member, *, role: discord.Role):
         if role in user.roles:
             await ctx.send(f'{user} already hsa the role ,{role}')
         else :
@@ -21,7 +21,7 @@ class Moderation(commands.Cog):
         if isinstance(error, commands.MissingPermissions):
             await ctx.send('Sit down you do not have permissions')
     
-    @commands.command(pass_Context = True)
+    @commands.command()
     @has_permissions(manage_roles = True)
     async def removeroles(self, ctx, user : discord.Member , *, role : discord.Role):
         if role in user.roles:
