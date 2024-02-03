@@ -3,10 +3,12 @@ import discord
 from discord.ext import commands
 import os
 from dotenv import load_dotenv
+from discord import app_commands
 
 
 load_dotenv()
 client = commands.Bot(command_prefix = '$',intents=discord.Intents.all())
+
 
 @client.event
 async def on_ready():
@@ -15,6 +17,19 @@ async def on_ready():
     await load_extensions()
     print("PaxMax is functioning properly!!!")
     print('---------------------------------')
+    try :
+        synced = await client.tree.sync()
+        print(f'Synced {len(synced)} commands')
+    except Exception as e:
+        print(e)
+
+@client.tree.command(name="hello")
+async def test(interaction : discord.Interaction):
+    await interaction.response.send_message("Wow")
+    
+@client.tree.command(name="again")
+async def test(interaction : discord.Interaction):
+    await interaction.response.send_message("sheesh")
 
 async def load_extensions():
     print("Loading extensions...")
