@@ -1,10 +1,19 @@
 import discord
 from discord.ext import commands
+from discord import app_commands
 
 class Greetings(commands.Cog):
     def __init__(self, client):
         self.client = client
-    
+            
+    # @app_commands.command(name="command-1",description="wow")
+    # @app_commands.guilds(discord.Object(id=...))
+    # async def my_command(self, interaction: discord.Interaction) -> None:
+    #     await interaction.response.send_message("Hello from command 1!", ephemeral=True)
+    @commands.hybrid_command(name='what', description='Make the bot send messages!')
+    async def what(self,interaction: discord.Interaction, text: str):
+        await interaction.send(content=text, ephemeral=True)
+
     @commands.command()
     async def hello(self, ctx):
         await ctx.send("Hello ! wassyuyp my N")
@@ -64,4 +73,4 @@ class Greetings(commands.Cog):
             await message.add_reaction(emoji)
 
 async def setup(client):
-    await client.add_cog(Greetings(client))
+    await client.add_cog(Greetings(client), guilds = [discord.Object(id=1197227351319269487)])
