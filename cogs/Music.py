@@ -16,7 +16,44 @@ class Music(commands.Cog):
 
     def __init__(self, client):
         self.client = client
+        
+    
+    @commands.command()
+    async def music_menu(self, ctx):
+        view = self.create_music_menu(ctx)
+        await ctx.reply("Music Menu:", view=view)
 
+    def create_music_menu(self,ctx):
+        class MusicMenu(discord.ui.View):
+            def __init__(self,ctx):
+                super().__init__()
+                self.ctx = ctx
+
+            @discord.ui.button(label="Join", style=discord.ButtonStyle.green)
+            async def join(self, button: discord.ui.Button, interaction: discord.Interaction):
+                await interaction.response.send_message("Joining...")
+
+            @discord.ui.button(label="Leave", style=discord.ButtonStyle.red)
+            async def leave(self, interaction: discord.Interaction, button: discord.ui.Button):
+                if(self.ctx.voice_client):
+                    await self.ctx.guild.voice_client.disconnect()
+                    await interaction.response.send_message("Leaving...")
+                else:
+                    await interaction.response.send_message("I am not in a VC")
+
+            @discord.ui.button(label="Stop", style=discord.ButtonStyle.danger)
+            async def stop(self, button: discord.ui.Button, interaction: discord.Interaction):
+                await interaction.response.send_message("Stopping...")
+
+            @discord.ui.button(label="Resume", style=discord.ButtonStyle.grey)
+            async def resume(self, button: discord.ui.Button, interaction: discord.Interaction):
+                await interaction.response.send_message("Resuming...")
+
+            @discord.ui.button(label="Pause", style=discord.ButtonStyle.blurple)
+            async def pause(self, button: discord.ui.Button, interaction: discord.Interaction):
+                await interaction.response.send_message("Pausing...")
+
+        return MusicMenu(ctx)
         
     @commands.command(pass_Context = True)
     async def join(self, ctx):
