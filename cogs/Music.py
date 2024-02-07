@@ -25,13 +25,21 @@ class Music(commands.Cog):
 
     def create_music_menu(self,ctx):
         class MusicMenu(discord.ui.View):
-            def __init__(self,ctx):
+            def __init__(self,ctx,client):
                 super().__init__()
                 self.ctx = ctx
+                self.client = client
 
             @discord.ui.button(label="Join", style=discord.ButtonStyle.green)
-            async def join(self, button: discord.ui.Button, interaction: discord.Interaction):
-                await interaction.response.send_message("Joining...")
+            async def join(self,  interaction: discord.Interaction,  button: discord.ui.Button,):
+                if(ctx.author.voice):
+                    channel = ctx.message.author.voice.channel
+                    voice = await channel.connect()
+                    source = FFmpegPCMAudio('wave.wav')
+                    player = voice.play(source)
+                    await interaction.response.send_message("Joining...")
+                else:
+                    await interaction.response.send_message('You are not in a voice channel, You must be in a VC to run this command')
 
             @discord.ui.button(label="Leave", style=discord.ButtonStyle.red)
             async def leave(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -42,15 +50,27 @@ class Music(commands.Cog):
                     await interaction.response.send_message("I am not in a VC")
 
             @discord.ui.button(label="Stop", style=discord.ButtonStyle.danger)
-            async def stop(self, button: discord.ui.Button, interaction: discord.Interaction):
+            async def skip(self, interaction: discord.Interaction, button: discord.ui.Button, ):
+                voice = discord.utils.get(self.client.voice_clients,guild=ctx.guild)
+                voice.stop()  
                 await interaction.response.send_message("Stopping...")
 
             @discord.ui.button(label="Resume", style=discord.ButtonStyle.grey)
             async def resume(self, button: discord.ui.Button, interaction: discord.Interaction):
+                voice = discord.utils.get(self.client.voice_clients,guild=ctx.guild)
+                if voice.is_paused():
+                    voice.resume()
+                else:
+                    await interaction.response.send_message('???? Resume what?')
                 await interaction.response.send_message("Resuming...")
 
             @discord.ui.button(label="Pause", style=discord.ButtonStyle.blurple)
-            async def pause(self, button: discord.ui.Button, interaction: discord.Interaction):
+            async def pause(self, interaction: discord.Interaction, button: discord.ui.Button):
+                voice = discord.utils.get(self.client.voice_clients,guild=ctx.guild)
+                if voice.is_playing():
+                    voice.pause()
+                else:
+                    await ctx.send('???? pause what?')  
                 await interaction.response.send_message("Pausing...")
 
         return MusicMenu(ctx)
@@ -62,6 +82,8 @@ class Music(commands.Cog):
             voice = await channel.connect()
             source = FFmpegPCMAudio('wave.wav')
             player = voice.play(source)
+            view = self.create_music_menu(ctx)
+            await ctx.reply("Music Menu:", view=view)
         else:
             await ctx.send('You are not in a voice channel, You must be in a VC to run this command')
 
@@ -79,7 +101,9 @@ class Music(commands.Cog):
         if voice.is_playing():
             voice.pause()
         else:
-            await ctx.send('???? pause what?')  
+            await ctx.send('???? pause what?')
+        view = self.create_music_menu(ctx)
+        await ctx.reply("Music Menu:", view=view)
 
     @commands.command(pass_Context = True)
     async def resume(self,ctx):
@@ -90,7 +114,7 @@ class Music(commands.Cog):
             await ctx.send('???? Resume what?')
 
     @commands.command(pass_Context = True)
-    async def stop(self, ctx):
+    async def skip(self, ctx):
         voice = discord.utils.get(self.client.voice_clients,guild=ctx.guild)
         voice.stop()  
 
@@ -99,7 +123,7 @@ class Music(commands.Cog):
         voice = ctx.guild.voice_client
         #change extension buddy
         source = FFmpegPCMAudio(arg) 
-        player = voice.play(source, after = lambda x=None:check_queue(ctx,ctx.message.guild.id))
+        player = voice.play(source, after = lambda x=None:check_queue(self,ctx,ctx.message.guild.id))
 
     @commands.command(pass_Context = True)
     async def queue(self, ctx, arg):
