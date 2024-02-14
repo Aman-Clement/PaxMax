@@ -84,8 +84,8 @@ class Music(commands.Cog):
         
     
     
-    @commands.command(name = 'hit', aliases=['p','playing'], help = 'Play your banger')
-    async def hit(self, ctx, *args):
+    @commands.command(name = 'play', aliases=['p','playing'], help = 'Play your banger')
+    async def play(self, ctx, *args):
         query = " ".join(args)
         
         voice_channel = ctx.author.voice.channel
@@ -128,12 +128,13 @@ class Music(commands.Cog):
             self.vc.stop()
             await self.play_music(ctx)
     
-    @commands.command(name = 'qu', help='Asks you to hollup')
-    async def qu(self, ctx):
+    @commands.command(name = 'queue', help='Check the queue | To add music to the queue use play')
+    async def queue(self, ctx):
         retval = ""
         
         for i in range(0, len(self.music_queue)):
-            if i > 4: break
+            if i > 4: 
+                break
             retval += self.music_queue[0][1]['title'] +'\n'
         
         if retval != "":
@@ -254,28 +255,28 @@ class Music(commands.Cog):
         view = self.create_music_menu(ctx)
         await ctx.reply("Music Menu:", view=view)  
 
-    @commands.command(pass_Context = True)
-    async def play(self, ctx,arg):
-        voice = ctx.guild.voice_client
-        #change extension buddy
-        source = FFmpegPCMAudio(arg) 
-        player = voice.play(source, after = lambda x=None:check_queue(self,ctx,ctx.message.guild.id))
+    # @commands.command(pass_Context = True)
+    # async def play(self, ctx,arg):
+    #     voice = ctx.guild.voice_client
+    #     #change extension buddy
+    #     source = FFmpegPCMAudio(arg) 
+    #     player = voice.play(source, after = lambda x=None:check_queue(self,ctx,ctx.message.guild.id))
 
-    @commands.command(pass_Context = True)
-    async def queue(self, ctx, arg):
-        voice = ctx.guild.voice_client
-        #change extension buddy
-        source = FFmpegPCMAudio(arg) 
+    # @commands.command(pass_Context = True)
+    # async def queue(self, ctx, arg):
+    #     voice = ctx.guild.voice_client
+    #     #change extension buddy
+    #     source = FFmpegPCMAudio(arg) 
         
-        guild_id = ctx.message.guild.id
+    #     guild_id = ctx.message.guild.id
         
-        if guild_id in queues:
-            queues[guild_id].append(source)
+    #     if guild_id in queues:
+    #         queues[guild_id].append(source)
         
-        else:
-            queues[guild_id] =[source]
+    #     else:
+    #         queues[guild_id] =[source]
             
-        await ctx.send("Added to Queue")
+    #     await ctx.send("Added to Queue")
 
 async def setup(client):
     await client.add_cog(Music(client))
