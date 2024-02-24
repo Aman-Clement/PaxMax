@@ -1,10 +1,8 @@
-import asyncio
 import discord
 from discord.ext import commands
 import os
 from dotenv import load_dotenv
 from discord import app_commands
-
 
 load_dotenv()
 client = commands.Bot(command_prefix = '$',intents=discord.Intents.all())
@@ -32,8 +30,14 @@ async def on_ready():
     await load_extensions()
     print("PaxMax is functioning properly!!!")
     print('---------------------------------')
+    print(f"User : {client.user} (ID : {client.user.id})")
+    print(f"Guild ID : {client.guilds[0].id}")
+    print('---------------------------------')
+    GUILDS_ID = discord.Object(id = int(os.getenv("GUILD")))
+    
+    client.tree.copy_global_to(guild=GUILDS_ID)
     try :
-        synced = await client.tree.sync()
+        synced = await client.tree.sync(guild=GUILDS_ID)
         print(f'Synced {len(synced)} commands')
     except Exception as e:
         print(e)
@@ -46,11 +50,23 @@ async def say(interaction: discord.Interaction, text: str):
 @client.tree.command(name="hello")
 async def test(interaction : discord.Interaction):
     await interaction.response.send_message("Wow")
-
     
 @client.tree.command(name="again")
 async def test(interaction : discord.Interaction):
     await interaction.response.send_message("sheesh")
+
+## ----------------------- Tests Required --------------------------
+
+@client.tree.context_menu(name = "Show Join Date")
+async def get_joined_date(interaction : discord.Interaction, member: discord.Member):
+    await interaction.response.send_message(f"Member Joined : {discord.utils.format_dt(member.joined_at)} ", ephemeral = True)
+
+@client.hybrid_command(name='report_message')
+async def report_message(interaction: discord.Interaction, message: discord.Message):
+    await interaction.response.send_message(f"Message Reported", ephemeral=True)
+
+## ----------------------- ^ Required ^ ---------------------------
+    
 
 async def load_extensions():
     print("Loading extensions...")
