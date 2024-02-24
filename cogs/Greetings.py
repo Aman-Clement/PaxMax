@@ -47,6 +47,33 @@ class Greetings(commands.Cog):
         embed.add_field(name = 'labooo',value='belowoooo',inline=True)
         embed.set_footer(text='WOWOWO')
         await ctx.send(embed = embed )
+        
+    @commands.Cog.listener()
+    async def on_member_join(self,ctx):
+        embed = discord.Embed(title = ctx.display_name,color = 0x4dff4d)
+        # embed.set_author(name = ctx.author.display_name, icon_url = ctx.author.avatar.url)
+        embed.set_thumbnail(url = ctx.avatar)
+        embed.set_image(url='https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExN284ZDdraXloczdkOTUwcTU2dGtudGttb2VscDAwbTVndTh2YTVvdCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l4FGpPki5v2Bcd6Ss/giphy-downsized-large.gif')
+        embed.add_field(name = 'Joined Server',value=f'{discord.utils.format_dt(ctx.joined_at)}',inline=True)
+        embed.add_field(name = 'Joined Discord',value=f'{discord.utils.format_dt(ctx.created_at)}',inline=True)
+        embed.add_field(name = 'Welcome')
+        channel = self.client.get_channel(1210901142989447188)
+        await channel.send(embed = embed )
+        # await member.send('text')
+    
+    @commands.command()
+    async def checkout(self,ctx,member:discord.Member):
+        embed = discord.Embed(title = member.display_name,color = 0x4dff4d)
+        # embed.set_author(name = ctx.author.display_name, icon_url = ctx.author.avatar.url)
+        embed.set_thumbnail(url = member.avatar)
+        embed.add_field(name = 'Joined Server',value=f'{discord.utils.format_dt(member.joined_at)}',inline=True)
+        embed.add_field(name = 'Joined Discord',value=f'{discord.utils.format_dt(member.created_at)}',inline=True)
+        embed.add_field(name = 'DOB',value='will be added"',inline=False)
+        embed.set_footer(text='')
+        await ctx.send(embed = embed )
+        # channel = self.client.get_channel(1197227352162312274)
+        # await channel.send('Hello!!!!')
+        # # await member.send('text')
     
     #Reactions
     @commands.Cog.listener()
